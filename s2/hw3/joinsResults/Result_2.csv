@@ -1,0 +1,24 @@
+Limit  (cost=23515.81..23515.93 rows=50 width=55) (actual time=112.273..112.278 rows=50 loops=1)
+"  Buffers: shared hit=2898 read=2402, temp read=126 written=287"
+  ->  Sort  (cost=23515.81..23640.81 rows=50000 width=55) (actual time=112.268..112.270 rows=50 loops=1)
+        Sort Key: (count(rv.review_id)) DESC
+        Sort Method: top-N heapsort  Memory: 31kB
+"        Buffers: shared hit=2898 read=2402, temp read=126 written=287"
+        ->  HashAggregate  (cost=19472.03..21854.85 rows=50000 width=55) (actual time=100.390..109.555 rows=50000 loops=1)
+              Group Key: m.movie_id
+              Batches: 5  Memory Usage: 8241kB  Disk Usage: 1592kB
+"              Buffers: shared hit=2895 read=2402, temp read=126 written=287"
+              ->  Hash Right Join  (cost=4020.00..8315.78 rows=150000 width=23) (actual time=27.494..71.095 rows=152490 loops=1)
+                    Hash Cond: (rv.movie_id = m.movie_id)
+                    Buffers: shared hit=2895 read=2402
+                    ->  Seq Scan on review rv  (cost=0.00..3902.00 rows=150000 width=12) (actual time=0.538..17.253 rows=150000 loops=1)
+                          Buffers: shared read=2402
+                    ->  Hash  (cost=3395.00..3395.00 rows=50000 width=15) (actual time=26.784..26.784 rows=50000 loops=1)
+                          Buckets: 65536  Batches: 1  Memory Usage: 2856kB
+                          Buffers: shared hit=2895
+                          ->  Seq Scan on movie m  (cost=0.00..3395.00 rows=50000 width=15) (actual time=1.893..18.637 rows=50000 loops=1)
+                                Buffers: shared hit=2895
+Planning:
+  Buffers: shared hit=72 read=2
+Planning Time: 0.859 ms
+Execution Time: 113.012 ms

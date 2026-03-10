@@ -1,0 +1,49 @@
+Limit  (cost=1.06..44.04 rows=100 width=59) (actual time=0.989..16.830 rows=100 loops=1)
+  Buffers: shared hit=408 read=94
+  ->  Nested Loop  (cost=1.06..64269.28 rows=149534 width=59) (actual time=0.988..16.818 rows=100 loops=1)
+        Buffers: shared hit=408 read=94
+        ->  Nested Loop  (cost=0.91..60530.88 rows=149534 width=31) (actual time=0.773..16.502 rows=100 loops=1)
+              Buffers: shared hit=382 read=92
+              ->  Nested Loop  (cost=0.60..44121.64 rows=80000 width=35) (actual time=0.498..7.261 rows=59 loops=1)
+                    Buffers: shared hit=318 read=37
+                    ->  Nested Loop  (cost=0.30..26063.20 rows=80000 width=20) (actual time=0.453..6.594 rows=59 loops=1)
+                          Buffers: shared hit=141 read=37
+                          ->  Seq Scan on purchase p  (cost=0.00..1467.00 rows=80000 width=14) (actual time=0.386..0.398 rows=59 loops=1)
+                                Buffers: shared read=1
+                          ->  Memoize  (cost=0.30..0.48 rows=1 width=14) (actual time=0.104..0.104 rows=1 loops=59)
+                                Cache Key: p.user_id
+                                Cache Mode: logical
+                                Hits: 0  Misses: 59  Evictions: 0  Overflows: 0  Memory Usage: 7kB
+                                Buffers: shared hit=141 read=36
+                                ->  Index Scan using users_pkey on users u  (cost=0.29..0.47 rows=1 width=14) (actual time=0.103..0.103 rows=1 loops=59)
+                                      Index Cond: (user_id = p.user_id)
+                                      Buffers: shared hit=141 read=36
+                    ->  Memoize  (cost=0.30..0.48 rows=1 width=15) (actual time=0.011..0.011 rows=1 loops=59)
+                          Cache Key: p.movie_id
+                          Cache Mode: logical
+                          Hits: 0  Misses: 59  Evictions: 0  Overflows: 0  Memory Usage: 7kB
+                          Buffers: shared hit=177
+                          ->  Index Scan using idx_movie_id_btree on movie m  (cost=0.29..0.47 rows=1 width=15) (actual time=0.010..0.010 rows=1 loops=59)
+                                Index Cond: (movie_id = p.movie_id)
+                                Buffers: shared hit=177
+              ->  Memoize  (cost=0.30..0.37 rows=3 width=8) (actual time=0.155..0.156 rows=2 loops=59)
+                    Cache Key: p.movie_id
+                    Cache Mode: logical
+                    Hits: 0  Misses: 59  Evictions: 0  Overflows: 0  Memory Usage: 8kB
+                    Buffers: shared hit=64 read=55
+                    ->  Index Only Scan using movie_genre_pkey on movie_genre mg  (cost=0.29..0.36 rows=3 width=8) (actual time=0.154..0.155 rows=2 loops=59)
+                          Index Cond: (movie_id = p.movie_id)
+                          Heap Fetches: 0
+                          Buffers: shared hit=64 read=55
+        ->  Memoize  (cost=0.16..0.18 rows=1 width=36) (actual time=0.003..0.003 rows=1 loops=100)
+              Cache Key: mg.genre_id
+              Cache Mode: logical
+              Hits: 86  Misses: 14  Evictions: 0  Overflows: 0  Memory Usage: 2kB
+              Buffers: shared hit=26 read=2
+              ->  Index Scan using genre_pkey on genre g  (cost=0.15..0.17 rows=1 width=36) (actual time=0.016..0.016 rows=1 loops=14)
+                    Index Cond: (genre_id = mg.genre_id)
+                    Buffers: shared hit=26 read=2
+Planning:
+  Buffers: shared hit=168 read=8 dirtied=1
+Planning Time: 5.432 ms
+Execution Time: 17.915 ms

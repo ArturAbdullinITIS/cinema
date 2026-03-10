@@ -1,0 +1,21 @@
+Nested Loop  (cost=6961.79..7044.73 rows=10 width=18) (actual time=78.445..79.360 rows=10 loops=1)
+"  Buffers: shared hit=25 read=1728, temp read=115 written=275"
+  ->  Limit  (cost=6961.50..6961.52 rows=10 width=12) (actual time=78.423..78.425 rows=10 loops=1)
+"        Buffers: shared read=1723, temp read=115 written=275"
+        ->  Sort  (cost=6961.50..7138.54 rows=70817 width=12) (actual time=78.421..78.423 rows=10 loops=1)
+              Sort Key: (count(*)) DESC
+              Sort Method: top-N heapsort  Memory: 25kB
+"              Buffers: shared read=1723, temp read=115 written=275"
+              ->  HashAggregate  (cost=4723.00..5431.17 rows=70817 width=12) (actual time=64.352..74.223 rows=86272 loops=1)
+                    Group Key: viewing.user_id
+                    Batches: 5  Memory Usage: 8241kB  Disk Usage: 1568kB
+"                    Buffers: shared read=1723, temp read=115 written=275"
+                    ->  Seq Scan on viewing  (cost=0.00..3723.00 rows=200000 width=4) (actual time=0.333..18.134 rows=200000 loops=1)
+                          Buffers: shared read=1723
+  ->  Index Scan using users_pkey on users u  (cost=0.29..8.31 rows=1 width=14) (actual time=0.093..0.093 rows=1 loops=10)
+        Index Cond: (user_id = viewing.user_id)
+        Buffers: shared hit=25 read=5
+Planning:
+  Buffers: shared hit=48 read=2
+Planning Time: 1.934 ms
+Execution Time: 79.561 ms

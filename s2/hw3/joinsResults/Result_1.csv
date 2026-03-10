@@ -1,0 +1,37 @@
+Limit  (cost=7519.92..7575.94 rows=100 width=35) (actual time=20.122..28.794 rows=100 loops=1)
+"  Buffers: shared hit=1822 read=85, temp read=419 written=420"
+  ->  Nested Loop  (cost=7519.92..63540.49 rows=100000 width=35) (actual time=20.121..28.783 rows=100 loops=1)
+"        Buffers: shared hit=1822 read=85, temp read=419 written=420"
+        ->  Nested Loop  (cost=7519.62..45176.68 rows=100000 width=28) (actual time=20.081..27.618 rows=100 loops=1)
+"              Buffers: shared hit=1522 read=85, temp read=419 written=420"
+              ->  Gather Merge  (cost=7519.32..18916.38 rows=100000 width=22) (actual time=19.693..20.609 rows=100 loops=1)
+                    Workers Planned: 1
+                    Workers Launched: 1
+"                    Buffers: shared hit=1307, temp read=419 written=420"
+                    ->  Sort  (cost=6519.31..6666.37 rows=58824 width=22) (actual time=18.139..18.170 rows=708 loops=2)
+                          Sort Key: r.rental_date DESC
+                          Sort Method: external merge  Disk: 1752kB
+"                          Buffers: shared hit=1307, temp read=419 written=420"
+                          Worker 0:  Sort Method: external merge  Disk: 1600kB
+                          ->  Parallel Seq Scan on rental r  (cost=0.00..1859.24 rows=58824 width=22) (actual time=0.012..6.617 rows=50000 loops=2)
+                                Buffers: shared hit=1271
+              ->  Memoize  (cost=0.30..0.45 rows=1 width=14) (actual time=0.070..0.070 rows=1 loops=100)
+                    Cache Key: r.user_id
+                    Cache Mode: logical
+                    Hits: 0  Misses: 100  Evictions: 0  Overflows: 0  Memory Usage: 12kB
+                    Buffers: shared hit=215 read=85
+                    ->  Index Scan using users_pkey on users u  (cost=0.29..0.44 rows=1 width=14) (actual time=0.069..0.069 rows=1 loops=100)
+                          Index Cond: (user_id = r.user_id)
+                          Buffers: shared hit=215 read=85
+        ->  Memoize  (cost=0.30..0.44 rows=1 width=15) (actual time=0.011..0.011 rows=1 loops=100)
+              Cache Key: r.movie_id
+              Cache Mode: logical
+              Hits: 0  Misses: 100  Evictions: 0  Overflows: 0  Memory Usage: 12kB
+              Buffers: shared hit=300
+              ->  Index Scan using idx_movie_id_btree on movie m  (cost=0.29..0.43 rows=1 width=15) (actual time=0.011..0.011 rows=1 loops=100)
+                    Index Cond: (movie_id = r.movie_id)
+                    Buffers: shared hit=300
+Planning:
+  Buffers: shared hit=461 read=6
+Planning Time: 2.701 ms
+Execution Time: 29.781 ms
